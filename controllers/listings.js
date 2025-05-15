@@ -1,4 +1,5 @@
 const Listing = require("../models/listing");
+const User = require("../models/user");
 const NodeGeocoder = require('node-geocoder');
 
 const options = {
@@ -7,10 +8,29 @@ const options = {
 
 const geocoder = NodeGeocoder(options);
 
+// module.exports.index = async (req, res) => {
+//     const allListings = await Listing.find({});
+//     res.render("listings/index.ejs", {allListings});
+// };
+
 module.exports.index = async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", {allListings});
+    const { country } = req.query;
+    let allListings;
+
+    if (country && country !== "All") {
+        // allListings = await Listing.find({ country });
+        allListings = await Listing.find({ country: new RegExp(`^${country}$`, 'i') });
+    } else {
+        allListings = await Listing.find({});
+    }
+    const allListing = await Listing.find({});
+
+    // Get distinct list of countries to show in dropdown
+    const allCountries = await Listing.distinct("country");
+
+    res.render("listings/index.ejs", { allListing, allListings, allCountries, selectedCountry: country || "All" });
 };
+
 
 module.exports.renderNewForm = (req, res) => {
     res.render("listings/new.ejs")
