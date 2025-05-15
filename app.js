@@ -103,6 +103,11 @@ app.use("/listings", listingRouter);
 //review routes are in routes/review.js
 app.use("/listings/:id/reviews", reviewRouter);
 
+// Redirect root route to /listings
+app.get("/", (req, res) => {
+  res.redirect("/listings");
+});
+
 //user routes are in routes/user.js
 app.use("/", userRouter);
 
